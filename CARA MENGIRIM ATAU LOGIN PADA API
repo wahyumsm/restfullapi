@@ -1,0 +1,82 @@
+import axios from 'axios'
+import React, { useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
+import AccessContext from '../context/AccessProvider'
+
+
+
+//USE CONTEXT
+const Login = () => {
+    const { accessToken, setAccessToken } = useContext(AccessContext)
+
+    const [email, setEmail] = useState("")
+    const [emailError, setEmailError] = useState("")
+    const [password, setPassword] = useState("")
+    const [passwordError, setPasswordError] = useState("")
+
+    const navigate = useNavigate()
+
+    const handleLogin = async (e) => {
+        e.preventDefault()
+        await axios({
+            method: 'POST',
+            url: 'https://freezer.dendirenaldo.com/auth/signin',
+            data: {
+                email: email,
+                password: password
+
+            },
+            //TANDA LOGIN
+            // headers: {
+            //     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwiaWF0IjoxNjY2MzQ0Nzk1LCJleHAiOjE2Njg5MzY3OTV9.XB5qHfn_ppg7ycQto0y53PwHk6KNiGcVu58qg6Ms1OE'
+            // }
+
+        }).catch((err) => {
+            const error = err.response.data
+            if (error?.email) {
+                setEmailError(Error.email)
+            } else {
+                setEmailError('')
+            }
+
+
+
+            if (error?.password) {
+                setPasswordError(Error.password)
+            } else {
+                setPasswordError('')
+            }
+        }).then((res) => {
+            if (res.data?.access_token) {
+                alert('berhasil')
+                setEmail("")
+                setPassword("")
+                setAccessToken(res.data.access_token)
+                navigate('/')
+            }
+        })
+
+    }
+
+
+    ///HTML NYA 
+    return (
+        <>
+            {accessToken}
+            <form onSubmit={handleLogin} style={{ backgroundColor: 'white', margintop: 1, textAlign: 'center' }} >
+
+
+                <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder='email' type="text" name="NAME" />
+                {emailError !== '' && (<h1>{emailError}</h1>)}
+
+                <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder='password' type="pwd" name="PASSWORD" />
+                {passwordError !== '' && (<h1>{passwordError}</h1>)}
+                <button type="submit">Login</button>
+            </form>
+
+
+        </>
+    )
+}
+
+export default Login
