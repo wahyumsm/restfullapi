@@ -1,0 +1,41 @@
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
+import AccessContext from '../context/AccessProvider';
+
+const Home = () => {
+    const { accessToken } = useContext(AccessContext)
+    const [profil, setProfil] = useState({})
+    // const [namaDepan,setNama]
+
+    //USE EFFECT:MENJALANKAN FUNGSI CALL BACK SEBELUM PAGE DILOAD
+    useEffect(() => {
+        const getUser = async () => {
+            await axios({
+                method: 'GET',
+                url: 'https://freezer.dendirenaldo.com/user',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            }).then((res) => {
+                if (res.data?.jenisKelamin) {
+                    setProfil(res.data)
+                    // alert('Selamat Datang ' + res.data.jenisKelamin)
+                }
+            })
+        }
+
+        getUser()
+    }, [])
+    return (
+        <>
+            <table>
+                <tr>
+                    <td>Nama Lengkap</td>
+                    <td>{profil.namaDepan}</td>
+                </tr>
+                <tr>
+                    <td>Jenis Kelamin</td>
+                    <td>{profil.jenisKelamin}</td>
+                </tr>
+            </table>
